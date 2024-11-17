@@ -10,13 +10,14 @@ const handleDomo = (e, onDomoAdded) => {
 
   const name = e.target.querySelector('#domoName').value;
   const age = e.target.querySelector('#domoAge').value;
+  const bday = e.target.querySelector('#domoBday').value;
 
-  if (!name || !age) {
+  if (!name || !age || !bday) {
     helper.handleError('All fields are required');
     return false;
   }
 
-  helper.sendPost(e.target.action, { name, age }, onDomoAdded);
+  helper.sendPost(e.target.action, { name, age, bday }, onDomoAdded);
   return false;
 };
 
@@ -33,6 +34,8 @@ const DomoForm = (props) => {
             <input id='domoName' type='text' name='name' placeholder='Domo Name' />
             <label htmlFor='age'>Age: </label>
             <input id='domoAge' type='number' min='0' name='age' />
+            <label htmlFor='bday'>Birthday (UTC): </label>
+            <input id='domoBday' type='date' name='bday' />
             <input className='makeDomoSubmit' type='submit' value='Make Domo' />
         </form>
     );
@@ -59,11 +62,17 @@ const DomoList = (props) => {
     };
 
     const domoNodes = domos.map(domo => {
+        const currentDate = new Date(Date.now()).toLocaleDateString(undefined, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+        const formattedBirthday = new Date(domo.bday).toLocaleDateString(undefined, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
         return (
             <div key={ domo.id } className='domo'>
                 <img src='/assets/img/domoface.jpeg' alt='domo face' className='domoFace' />
                 <h3 className='domoName'>Name: {domo.name}</h3>
                 <h3 className='domoAge'>Age: {domo.age}</h3>
+                <h3 className='domoBday'>Birthday: {formattedBirthday}</h3>
+                {currentDate == formattedBirthday &&
+                    <h3 className='domoCheer'>HAPPY BIRTHDAY, {domo.name}!!!</h3>
+                }
             </div>
         );
     });
